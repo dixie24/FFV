@@ -98,3 +98,6 @@ Pipfile.lock
 
 # Poetry
 poetry.lock
+
+# Pyre type checker
+__pycache__
