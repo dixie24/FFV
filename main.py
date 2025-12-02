@@ -26,3 +26,17 @@ def update_item(item_id: int, name: str, price: float):
 @app.delete("/items/{item_id}")
 def delete_item(item_id: int):  
     return {"item_id": item_id, "status": "deleted"}
+
+@app.get("/users/{user_id}/items/{item_id}")
+def read_user_item(user_id: int, item_id: int, q: Union[str, None] = None):
+    return {"user_id": user_id, "item_id": item_id, "q": q} 
+
+
+@app.get("/status/")
+def get_status():
+    return {"status": "ok"} 
+
+
+@app.get("/health/")
+def get_health():
+    return {"health": "good"}
