@@ -91,3 +91,16 @@ def delete_item_with_model(item_id: int):
 @app.get("/search/")
 def search_items(q: str):
     return {"results": f"Search results for query: {q}"}
+
+
+@app.get("/categories/{category_id}/items/")
+def read_category_items(category_id: int):
+    return {"category_id": category_id, "items": ["item1", "item2", "item3"]}
+
+@app.post("/categories/{category_id}/items/")
+def create_category_item(category_id: int, item: Item): 
+    return {"category_id": category_id, "item": item}  
+
+@app.get("/reports/")
+def get_reports():
+    return {"reports": ["report1", "report2", "report3"]}   
