@@ -104,3 +104,17 @@ def create_category_item(category_id: int, item: Item):
 @app.get("/reports/")
 def get_reports():
     return {"reports": ["report1", "report2", "report3"]}   
+
+
+@app.get("/metrics/")
+def get_metrics():
+    return {"metrics": {"uptime": "24h", "requests": 1000}}
+
+@app.get("/config/")
+def get_config():
+    return {"config": {"setting1": True, "setting2": "value2"}}
+
+@app.post("/config/")
+def update_config(setting1: bool, setting2: str):
+    return {"config": {"setting1": setting1, "setting2": setting2}}
+
