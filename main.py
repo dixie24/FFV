@@ -118,3 +118,10 @@ def get_config():
 def update_config(setting1: bool, setting2: str):
     return {"config": {"setting1": setting1, "setting2": setting2}}
 
+@app.get("/logs/")
+def get_logs():
+    return {"logs": ["log1", "log2", "log3"]}
+
+@app.post("/logs/")
+def create_log(entry: str):
+    return {"log_entry": entry, "status": "created"}
