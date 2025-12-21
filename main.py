@@ -1,8 +1,12 @@
 from typing import Union
 from pydantic import BaseModel
 from fastapi import FastAPI
+from api.users import user_rourter
+
 
 app = FastAPI()
+app.include_router(user_rourter)
+
 
 @app.get("/")
 def read_root():
@@ -42,27 +46,6 @@ def get_health():
     return {"health": "good"}
 
 
-class User(BaseModel):
-    id: int
-    name: str
-    email: str
-    
-@app.post("/users/")
-def create_user(user: User):
-    return user
-
-@app.get("/users/{user_id}")
-def read_user(user_id: int):
-    return {"user_id": user_id, "name": "John Doe", "email": "rtrr@23gmail.com"}
-
-@app.put("/users/{user_id}")
-def update_user(user_id: int, user: User):
-    return {"user_id": user_id, "name": user.name, "email": user.email}
-
-
-@app.delete("/users/{user_id}")
-def delete_user(user_id: int):
-    return {"user_id": user_id, "status": "deleted"}
 
 
 class Item(BaseModel):
