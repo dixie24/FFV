@@ -45,7 +45,9 @@ def get_status():
 def get_health():
     return {"health": "good"}
 
-
+@app.post("/items/create/")
+def create_item(name: str, description: Union[str, None] = None, price: float, tax: Union[float, None] = None):
+    return {"name": name, "description": description, "price": price, "tax": tax}
 
 
 class Item(BaseModel):
