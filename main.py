@@ -118,3 +118,12 @@ def get_notifications():
 @app.post("/notifications/")
 def create_notification(message: str):
     return {"message": message, "status": "sent"}
+
+
+@app.get("/tasks/")
+def get_tasks():
+    return {"tasks": ["task1", "task2", "task3"]}   
+
+@app.post("/tasks/")
+def create_task(name: str):
+    return {"task_name": name, "status": "created"}
