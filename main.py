@@ -127,3 +127,8 @@ def get_tasks():
 @app.post("/tasks/")
 def create_task(name: str):
     return {"task_name": name, "status": "created"}
+
+
+@app.get("/events/")
+def get_events():
+    return {"events": ["event1", "event2", "event3", "event4"]}
