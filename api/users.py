@@ -11,9 +11,9 @@ class User(BaseModel):
 def a5create_user(user: User):
     return user
 
-@user_rourter.post("/")
-def create_user(u2ser: User):
-    return user
+@user_rourter.get("/")
+def read_users():
+    return {"users": [{"id": 1, "name": "John Doe", "email": "rtrr@23gmail.com"}]}
 
 @user_rourter.get("/{user_id}")
 def read_user(user_id: int):
