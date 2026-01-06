@@ -45,9 +45,6 @@ def get_status():
 def get_health():
     return {"health": "good"}
 
-@app.post("/items/create/")
-def create_item(name: str, description: Union[str, None] = None, price: float, tax: Union[float, None] = None):
-    return {"name": name, "description": description, "price": price, "tax": tax}
 
 
 class Item(BaseModel):
@@ -132,3 +129,26 @@ def create_task(name: str):
 @app.get("/events/")
 def get_events():
     return {"events": ["event1", "event2", "event3", "event4"]}
+
+
+@app.get("/events/")
+def get_events_pop():
+    return {"events": ["event1", "event2", "event3", "event4"]}
+
+
+@app.get("/hello/{name}")
+async def say_hello(name: str):
+    """
+    Эта функция принимает 'name' из URL и возвращает JSON.
+    Например: http://127.0.0.1:8000/hello/Superman
+    """
+    return {
+        "message": f"Привет, {name}!",
+        "status": "success",
+        "hero_mode": True
+    }
+
+# Функция для сложения чисел (POST-запрос)
+@app.post("/sum")
+async def calculate_sum(a: int, b: int):
+    return {"result": a + b}
