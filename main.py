@@ -152,3 +152,14 @@ async def say_hello(name: str):
 @app.post("/sum")
 async def calculate_sum(a: int, b: int):
     return {"result": a + b}
+
+
+@app.get("/users/{user_id}")
+async def read_user(user_id: int):
+    return {"user_id": user_id, "role": "Superuser" if user_id == 1 else "Guest"}
+
+# 4. Функция для создания данных (POST запрос)
+# Принимает JSON и проверяет его по модели Item
+@app.post("/create-item/")
+async def create_item(item: Item):
+    return {"message": "Товар создан!", "data": item}
