@@ -163,3 +163,24 @@ async def read_user(user_id: int):
 @app.post("/create-item/")
 async def create_item(item: Item):
     return {"message": "Товар создан!", "data": item}
+
+
+@app.get("/")
+async def read_root():
+    return {"message": "Привет, Супермен! Твой API работает."}
+
+# 2. GET-запрос с параметром пути (Path Parameter)
+@app.get("/items/{item_id}")
+async def read_item(item_id: int):
+    return {"item_id": item_id, "status": "Информация получена"}
+
+# 3. GET-запрос с параметрами запроса (Query Parameters)
+@app.get("/search/")
+async def search_items(name: str, limit: int = 10):
+    return {"searching_for": name, "limit": limit}
+
+# 4. POST-запрос для создания объекта (Request Body)
+@app.post("/items/")
+async def create_item(item: Item):
+    # Здесь могла бы быть логика сохранения в базу данных
+    return {"message": "Предмет создан успешно", "data": item}
