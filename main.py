@@ -210,3 +210,25 @@ async def get_protected_data(
         },
         "data": ["Secret Fact 1", "Secret Fact 2"]
     }
+
+
+def send_mission_report(email: str, message: str):
+    # Имитация долгой работы (например, отправка почты)
+    time.sleep(5) 
+    print(f"Отчет отправлен на {email}: {message}")
+
+@app.post("/send-notification/{email}")
+async def notify_superman(email: str, background_tasks: BackgroundTasks):
+    """
+    Эндпоинт мгновенно возвращает ответ, 
+    а тяжелая задача выполняется 'под капотом'.
+    """
+    message = "Миссия завершена успешно. Город в безопасности!"
+    
+    # Добавляем задачу в очередь выполнения
+    background_tasks.add_task(send_mission_report, email, message)
+    
+    return {
+        "status": "Accepted",
+        "message": f"Супермен, задача запущена. Отчет придет на {email} через пару секунд."
+    }
