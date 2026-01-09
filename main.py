@@ -2,7 +2,10 @@ from typing import Union
 from pydantic import BaseModel
 from fastapi import FastAPI
 from api.users import user_rourter
-
+from fastapi import Request
+from fastapi.responses import JSONResponse
+from fastapi import FastAPI, BackgroundTasks
+import time
 
 app = FastAPI()
 app.include_router(user_rourter)
@@ -232,3 +235,20 @@ async def notify_superman(email: str, background_tasks: BackgroundTasks):
         "status": "Accepted",
         "message": f"Супермен, задача запущена. Отчет придет на {email} через пару секунд."
     }
+
+class SupermanException(Exception):
+    def __init__(self, name: str):
+        self.name = name
+
+@app.exception_handler(SupermanException)
+async def superman_exception_handler(request: Request, exc: SupermanException):
+    return JSONResponse(
+        status_code=418,
+        content={"message": f"Внимание! {exc.name}, обнаружен криптонит! Операция прервана."},
+    )
+
+@app.get("/check-safety/{item}")
+async def check_safety(item: str):
+    if item == "kryptonite":
+        raise SupermanException(name=item)
+    return {"status": "All good!"}
