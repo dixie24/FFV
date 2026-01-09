@@ -184,3 +184,29 @@ async def search_items(name: str, limit: int = 10):
 async def create_item(item: Item):
     # Здесь могла бы быть логика сохранения в базу данных
     return {"message": "Предмет создан успешно", "data": item}
+
+
+async def verify_token(x_token: str = Header(...)):
+    if x_token != "superman-secret-key":
+        raise HTTPException(status_code=400, detail="X-Token header invalid")
+    return x_token
+
+# Эндпоинт, использующий зависимость и сложную валидацию параметров
+@app.get("/protected-data/")
+async def get_protected_data(
+    token: str = Depends(verify_token),
+    priority: int = Query(..., ge=1, le=10), # Число от 1 до 10
+    category: str = Query(None, min_length=3, max_length=20)
+):
+    """
+    Доступ к этой функции есть только у тех, кто знает секретный токен.
+    """
+    return {
+        "message": "Доступ разрешен, Супермен!",
+        "token_used": token,
+        "filters": {
+            "priority": priority,
+            "category": category
+        },
+        "data": ["Secret Fact 1", "Secret Fact 2"]
+    }
