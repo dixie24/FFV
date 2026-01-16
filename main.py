@@ -252,3 +252,17 @@ async def check_safety(item: str):
     if item == "kryptonite":
         raise SupermanException(name=item)
     return {"status": "All good!"}
+
+
+
+@app.post("/logs/")
+def create_log(entry: str):
+    return {"log_entry": entry, "status": "created"}
+
+@app.get("/notifications/")
+def get_notifications():
+    return {"notifications": ["notification1", "notification2"]} 
+   
+@app.post("/notifications/")
+def create_notification(message: str):
+    return {"message": message, "status": "sent"}
