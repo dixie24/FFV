@@ -266,3 +266,14 @@ def get_notifications():
 @app.post("/notifications/")
 def create_notification(message: str):
     return {"message": message, "status": "sent"}
+
+
+@app.post("/send-notification/{email}")
+async def notify_superman(email: str, background_tasks: BackgroundTasks):
+
+    background_tasks.add_task(send_mission_report, email, message)
+    
+    return {
+        "status": "Accepted",
+        "message": f"Супермен, задача запущена. Отчет придет на {email} через пару секунд."
+    }
