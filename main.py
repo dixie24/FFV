@@ -6,6 +6,9 @@ from fastapi import Request
 from fastapi.responses import JSONResponse
 from fastapi import FastAPI, BackgroundTasks
 import time
+from fastapi import File, UploadFile, Header, HTTPException, Depends
+from enum import Enum
+
 
 app = FastAPI()
 app.include_router(user_rourter)
@@ -87,6 +90,22 @@ def read_category_items(category_id: int):
 @app.post("/categories/{category_id}/items/")
 def create_category_item(category_id: int, item: Item): 
     return {"category_id": category_id, "item": item}  
+
+
+
+
+class PowerLevel(str, Enum):
+    low = "low"
+    medium = "medium"
+    high = "high"
+    god = "god"
+
+@app.get("/hero/power/{level}")
+async def get_hero_by_power(level: PowerLevel):
+    if level == PowerLevel.god:
+        return {"message": "Это уровень Супермена!"}
+    return {"message": f"Уровень силы: {level.value}"}
+
 
 @app.post("/upload-map/")
 async def upload_secret_map(file: UploadFile = File(...)):
