@@ -16,6 +16,8 @@ def read_root():
     return {"Hello": "World"}
 
 
+
+
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: Union[str, None] = None):
     return {"item_id": item_id, "q": q}
@@ -86,211 +88,24 @@ def read_category_items(category_id: int):
 def create_category_item(category_id: int, item: Item): 
     return {"category_id": category_id, "item": item}  
 
-@app.get("/reports/")
-def get_reports():
-    return {"reports": ["report1", "report2", "report3"]}   
-
-
-@app.get("/metrics/")
-def get_metrics():
-    return {"metrics": {"uptime": "24h", "requests": 1000}}
-
-@app.get("/config/")
-def get_config():
-    return {"config": {"setting1": True, "setting2": "value2"}}
-
-@app.post("/config/")
-def update_config(setting1: bool, setting2: str):
-    return {"config": {"setting1": setting1, "setting2": setting2}}
-
-@app.get("/logs/")
-def get_logs():
-    return {"logs": ["log1", "log2", "log3"]}
-
-@app.post("/logs/")
-def create_log(entry: str):
-    return {"log_entry": entry, "status": "created"}
-
-@app.get("/notifications/")
-def get_notifications():
-    return {"notifications": ["notification1", "notification2"]} 
-   
-@app.post("/notifications/")
-def create_notification(message: str):
-    return {"message": message, "status": "sent"}
-
-
-@app.get("/tasks/")
-def get_tasks():
-    return {"tasks": ["task1", "task2", "task3"]}   
-
-@app.post("/tasks/")
-def create_task(name: str):
-    return {"task_name": name, "status": "created"}
-
-
-@app.get("/events/")
-def get_events():
-    return {"events": ["event1", "event2", "event3", "event4"]}
-
-
-@app.get("/events/")
-def get_events_pop():
-    return {"events": ["event1", "event2", "event3", "event4"]}
-
-
-@app.get("/hello/{name}")
-async def say_hello(name: str):
-    """
-    Эта функция принимает 'name' из URL и возвращает JSON.
-    Например: http://127.0.0.1:8000/hello/Superman
-    """
+@app.post("/upload-map/")
+async def upload_secret_map(file: UploadFile = File(...)):
+    # file.filename - имя файла
+    # file.file - сам объект файла для чтения
+    contents = await file.read() 
     return {
-        "message": f"Привет, {name}!",
-        "status": "success",
-        "hero_mode": True
-    }
-
-# Функция для сложения чисел (POST-запрос)
-@app.post("/sum")
-async def calculate_sum(a: int, b: int):
-    return {"result": a + b}
-
-
-@app.get("/users/{user_id}")
-async def read_user(user_id: int):
-    return {"user_id": user_id, "role": "Superuser" if user_id == 1 else "Guest"}
-
-# 4. Функция для создания данных (POST запрос)
-# Принимает JSON и проверяет его по модели Item
-@app.post("/create-item/")
-async def create_item(item: Item):
-    return {"message": "Товар создан!", "data": item}
-
-
-@app.get("/")
-async def read_root():
-    return {"message": "Привет, Супермен! Твой API работает."}
-
-# 2. GET-запрос с параметром пути (Path Parameter)
-@app.get("/items/{item_id}")
-async def read_item(item_id: int):
-    return {"item_id": item_id, "status": "Информация получена"}
-
-# 3. GET-запрос с параметрами запроса (Query Parameters)
-@app.get("/search/")
-async def search_items(name: str, limit: int = 10):
-    return {"searching_for": name, "limit": limit}
-
-# 4. POST-запрос для создания объекта (Request Body)
-@app.post("/items/")
-async def create_item(item: Item):
-    # Здесь могла бы быть логика сохранения в базу данных
-    return {"message": "Предмет создан успешно", "data": item}
-
-
-async def verify_token(x_token: str = Header(...)):
-    if x_token != "superman-secret-key":
-        raise HTTPException(status_code=400, detail="X-Token header invalid")
-    return x_token
-
-# Эндпоинт, использующий зависимость и сложную валидацию параметров
-@app.get("/protected-data/")
-async def get_protected_data(
-    token: str = Depends(verify_token),
-    priority: int = Query(..., ge=1, le=10), # Число от 1 до 10
-    category: str = Query(None, min_length=3, max_length=20)
-):
-    """
-    Доступ к этой функции есть только у тех, кто знает секретный токен.
-    """
-    return {
-        "message": "Доступ разрешен, Супермен!",
-        "token_used": token,
-        "filters": {
-            "priority": priority,
-            "category": category
-        },
-        "data": ["Secret Fact 1", "Secret Fact 2"]
+        "filename": file.filename, 
+        "size": len(contents),
+        "content_type": file.content_type
     }
 
 
-def send_mission_report(email: str, message: str):
-    # Имитация долгой работы (например, отправка почты)
-    time.sleep(5) 
-    print(f"Отчет отправлен на {email}: {message}")
 
-@app.post("/send-notification/{email}")
-async def notify_superman(email: str, background_tasks: BackgroundTasks):
-    """
-    Эндпоинт мгновенно возвращает ответ, 
-    а тяжелая задача выполняется 'под капотом'.
-    """
-    message = "Миссия завершена успешно. Город в безопасности!"
-    
-    # Добавляем задачу в очередь выполнения
-    background_tasks.add_task(send_mission_report, email, message)
-    
-    return {
-        "status": "Accepted",
-        "message": f"Супермен, задача запущена. Отчет придет на {email} через пару секунд."
-    }
-
-class SupermanException(Exception):
-    def __init__(self, name: str):
-        self.name = name
-
-@app.exception_handler(SupermanException)
-async def superman_exception_handler(request: Request, exc: SupermanException):
-    return JSONResponse(
-        status_code=418,
-        content={"message": f"Внимание! {exc.name}, обнаружен криптонит! Операция прервана."},
-    )
-
-@app.get("/check-safety/{item}")
-async def check_safety(item: str):
-    if item == "kryptonite":
-        raise SupermanException(name=item)
-    return {"status": "All good!"}
-
-
-
-@app.post("/logs/")
-def create_log(entry: str):
-    return {"log_entry": entry, "status": "created"}
-
-@app.get("/notifications/")
-def get_notifications():
-    return {"notifications": ["notification1", "notification2"]} 
-   
-@app.post("/notifications/")
-def create_notification(message: str):
-    return {"message": message, "status": "sent"}
-
-
-@app.post("/send-notification/{email}")
-async def notify_superman(email: str, background_tasks: BackgroundTasks):
-
-    background_tasks.add_task(send_mission_report, email, message)
-    
-    return {
-        "status": "Accepted",
-        "message": f"Супермен, задача запущена. Отчет придет на {email} через пару секунд."
-    }
-
-
-@app.post("/send-notification/{email}")
-async def notify_superman(email: str, background_tasks: BackgroundTasks):
-    """
-    Эндпоинт мгновенно возвращает ответ, 
-    а тяжелая задача выполняется 'под капотом'.
-    """
-    message = "Миссия завершена успешно. Город в безопасности!"
-    
-    # Добавляем задачу в очередь выполнения
-    background_tasks.add_task(send_mission_report, email, message)
-    
-    return {
-        "status": "Accepted",
-        "message": f"Супермен, задача запущена. Отчет придет на {email} через пару секунд."
-    }
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    start_time = time.time()
+    response = await call_next(request) # Передаем запрос дальше
+    process_time = time.time() - start_time
+    response.headers["X-Process-Time"] = str(process_time)
+    print(f"Запрос обработан за: {process_time:.4f} сек")
+    return response
