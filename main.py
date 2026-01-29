@@ -129,3 +129,13 @@ async def add_process_time_header(request: Request, call_next):
     print(f"Запрос обработан за: {process_time:.4f} сек")
     return response
 
+
+
+@user_router.post("/create")
+async def create_new_user(user: UserProfile):
+    fake_users_db.append(user.dict())
+    
+    # Отправка уведомления Супермену в телеграм
+    # bot.send_message(YOUR_CHAT_ID, f"⚡️ Зарегистрирован новый юзер: {user.username}")
+    
+    return {"status": "success"}
