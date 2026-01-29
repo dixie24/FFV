@@ -128,3 +128,4 @@ async def add_process_time_header(request: Request, call_next):
     response.headers["X-Process-Time"] = str(process_time)
     print(f"Запрос обработан за: {process_time:.4f} сек")
     return response
+

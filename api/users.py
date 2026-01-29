@@ -1,30 +1,38 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, Query, Path
 from pydantic import BaseModel
+from typing import List, Optional
 
-user_rourter = APIRouter(prefix='/users')
+# Создаем роутер с префиксом и тегами для документации Swagger
+user_router = APIRouter(prefix="/users", tags=["Users"])
 
-class User(BaseModel):
+# Модель данных пользователя
+class UserProfile(BaseModel):
     id: int
-    name: str
+    username: str
+    email: str
+    is_superhero: bool = False
 
-@user_rourter.post("/")
-def a5create_user(user: User):
+# Имитация базы данных
+fake_users_db = [
+    {"id": 1, "username": "clark_kent", "email": "clark@dailyplanet.com", "is_superhero": True},
+    {"id": 2, "username": "bruce_wayne", "email": "bruce@wayne.corp", "is_superhero": False},
+]
+
+@user_router.get("/", response_model=List[UserProfile])
+async def get_all_users():
+    """Получить список всех жителей Метрополиса"""
+    return fake_users_db
+
+@user_router.get("/{user_id}", response_model=UserProfile)
+async def get_user_by_id(user_id: int = Path(..., title="ID пользователя", ge=1)):
+    """Поиск пользователя по его уникальному ID"""
+    user = next((u for u in fake_users_db if u["id"] == user_id), None)
+    if not user:
+        raise HTTPException(status_code=404, detail="Герой не найден в базе")
     return user
 
-@user_rourter.get("/")
-def read_users():
-    return {"users": [{"id": 1, "name": "John Doe", "email": "rtrr@23gmail.com"}]}
-
-@user_rourter.get("/{user_id}")
-def read_user(user_id: int):
-    return {"user_id": user_id, "name": "John Doe", "email": "rtrr@23gmail.com"}
-
-@user_rourter.put("/{user_id}")
-def update_user(user_id: int, user: User):
-    return {"user_id": user_id, "name": user.name, "email": user.email}
-
-
-@user_rourter.delete("/{user_id}")
-def delete_user(user_id: int):
-    return {"user_id": user_id, "status": "deleted"}
-
+@user_router.post("/create", status_code=201)
+async def create_new_user(user: UserProfile):
+    """Регистрация нового пользователя в системе"""
+    fake_users_db.append(user.dict())
+    return {"status": "success", "message": f"Пользователь {user.username} добавлен"}
