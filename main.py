@@ -106,6 +106,12 @@ async def get_hero_by_power(level: PowerLevel):
         return {"message": "Это уровень Супермена!"}
     return {"message": f"Уровень силы: {level.value}"}
 
+@app.get("/headers/")
+async def read_headers(user_agent: Union[str, None] = Header(default=None)):
+    if user_agent:
+        return {"User-Agent": user_agent}
+    else:
+        raise HTTPException(status_code=400, detail="User-Agent header is missing")
 
 @app.post("/upload-map/")
 async def upload_secret_map(file: UploadFile = File(...)):
@@ -128,14 +134,3 @@ async def add_process_time_header(request: Request, call_next):
     response.headers["X-Process-Time"] = str(process_time)
     print(f"Запрос обработан за: {process_time:.4f} сек")
     return response
-
-
-
-@user_router.post("/create")
-async def create_new_user(user: UserProfile):
-    fake_users_db.append(user.dict())
-    
-    # Отправка уведомления Супермену в телеграм
-    # bot.send_message(YOUR_CHAT_ID, f"⚡️ Зарегистрирован новый юзер: {user.username}")
-    
-    return {"status": "success"}
