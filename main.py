@@ -145,3 +145,7 @@ def write_log(message: str):
 async def process_data(background_tasks: BackgroundTasks, data: str):
     background_tasks.add_task(write_log, f"Обработка данных: {data}")
     return {"message": "Данные обрабатываются в фоновом режиме"}
+
+def write_log(message: str):
+    with open("log.txt", "a") as log_file:
+        log_file.write(f"{time.ctime()}: {message}\n")
